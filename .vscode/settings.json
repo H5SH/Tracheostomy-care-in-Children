@@ -1,0 +1,9 @@
+{  
+"liveServer.settings.https":   
+{
+"enable": false, //set it true to enable the feature.  
+"cert": "C:\\H5SH\\H5SHslsCertificate.crt", //full path of the certificate  
+"key": "C:\\H5SH\\Karbon\\OnlineMeetupApp\\springboot_onlinemeetup\\keystore.jks", //full path of the private key  
+"passphrase": "1234hello1234"  
+}  
+}

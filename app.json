@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "FAHS",
+    "slug": "languages",
+    "version": "1.0.1",
+    "orientation": "portrait",
+    "icon": "./assets/FAHSIcon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/AppLogo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.uol.fahs"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/FAHSIcon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.h5sh.languages"
+    },
+    "web": {
+      "favicon": "./assets/FAHSIcon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b889ecdd-6d6d-4a52-987d-786b59265e1f"
+      }
+    }
+  }
+}
