@@ -2,7 +2,7 @@
   "expo": {
     "name": "FAHS",
     "slug": "languages",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/FAHSIcon.png",
     "userInterfaceStyle": "light",
@@ -19,6 +19,7 @@
       "bundleIdentifier": "com.uol.fahs"
     },
     "android": {
+       "versionCode": 2,
       "adaptiveIcon": {
         "foregroundImage": "./assets/FAHSIcon.png",
         "backgroundColor": "#ffffff"
