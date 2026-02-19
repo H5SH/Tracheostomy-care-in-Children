@@ -1,41 +1,77 @@
 import { FlashList } from "@shopify/flash-list";
-import { ScrollView, Text } from "react-native";
-import { names } from "../data/deases";
-import { ImageSquareCard } from '../static/liteNative/components';
-import { images } from "../data/deases";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { stylesCard } from "../static/liteNative/style";
+import { View, Text, TouchableOpacity } from "react-native";
+import { names, images } from "../data/deases";
+import { ImageSquareCard } from "../static/liteNative/components";
 
-function MedList({navigation}){
-    const renderItem = ({ item }) => (
-       <ImageSquareCard Title={item} source={images[item]} onPress={ ()=> navigation.navigate('Video', {name: item})}/>
-      );
+function MedList({ navigation }) {
+  const renderItem = ({ item }) => (
+    <View style={{ marginBottom: 16 }}>
+      <ImageSquareCard
+        Title={item}
+        source={images[item]}
+        onPress={() => navigation.navigate("Video", { name: item })}
+      />
+    </View>
+  );
 
-    return (
-        <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 5, paddingTop: 10, backgroundColor: "#2C3E50"}}>
-            <FlashList
-                renderItem={renderItem}
-                estimatedItemSize={50}
-                data={names}
-                keyExtractor={(item) => item}
-            />
-            <TouchableOpacity
-                style={stylesCard.touchContainer}
-                onPress={() => navigation.navigate('Links')}
-            >
-                <Text 
-                style={{ 
-                    color: "white", 
-                    textAlign: "center", 
-                    fontWeight: "bold", 
-                    backgroundColor: "black", 
-                    padding: 10 
-                }}>
-                    Trachestromy Care Management
-                </Text>
-            </TouchableOpacity>
-        </ScrollView>
-    )
+  return (
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: "#f9fafb", // clean modern background
+        paddingHorizontal: 14,
+        paddingTop: 20,
+      }}
+    >
+      {/* Title */}
+      <Text
+        style={{
+          fontSize: 26,
+          fontWeight: "bold",
+          marginBottom: 20,
+          color: "#111827",
+        }}
+      >
+        Procedures
+      </Text>
+
+      {/* List */}
+      <FlashList
+        data={names}
+        renderItem={renderItem}
+        estimatedItemSize={120}
+        keyExtractor={(item) => item}
+        showsVerticalScrollIndicator={false}
+      />
+
+      {/* Bottom Button */}
+      <TouchableOpacity
+        onPress={() => navigation.navigate("Links")}
+        style={{
+          marginTop: 10,
+          marginBottom: 20,
+          backgroundColor: "#2563eb",
+          paddingVertical: 16,
+          borderRadius: 14,
+          alignItems: "center",
+          shadowColor: "#000",
+          shadowOpacity: 0.15,
+          shadowRadius: 5,
+          elevation: 4,
+        }}
+      >
+        <Text
+          style={{
+            color: "white",
+            fontSize: 16,
+            fontWeight: "600",
+          }}
+        >
+          Tracheostomy Care Management
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
 }
 
-export default MedList
+export default MedList;

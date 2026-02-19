@@ -7,7 +7,7 @@
     "icon": "./assets/FAHSIcon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/AppLogo.png",
+      "image": "./assets/FAHSIcon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

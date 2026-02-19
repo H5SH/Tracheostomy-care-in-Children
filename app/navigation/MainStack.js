@@ -10,26 +10,49 @@ import Links from "../screens/Links";
 const Stack = createStackNavigator()
 
 const MainStack = () => (
-    <NavigationContainer>
-        <Stack.Navigator initialRouteName="Search"
-            screenOptions={{
-                headerStyle: {
-                    backgroundColor: '#000', // Background color of the header
-                },
-                headerTintColor: '#fff', // Text color of the header
-                headerTitleStyle: {
-                    alignSelf: 'center', // Align title to center
-                },
-            }}
-        >
-            <Stack.Screen name="Affiliated" component={Affiliations} options={{ title: "Affiliation with" }}/>
-            <Stack.Screen name="List" component={MedList} />
-            {/* <Stack.Screen name='Detail' component={MedDetail} /> */}
-            <Stack.Screen name="Video" component={MedVideo} />
-            <Stack.Screen name="Links" component={Links} />
-        </Stack.Navigator>
-    </NavigationContainer>
-)
+  <NavigationContainer>
+    <Stack.Navigator
+      initialRouteName="Affiliated"
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: "#ffffff",
+        },
+        headerTintColor: "#111827", // dark readable text
+        headerTitleStyle: {
+          fontWeight: "600",
+          fontSize: 18,
+        },
+        headerTitleAlign: "center",
+        headerShadowVisible: true, // subtle modern shadow
+      }}
+    >
+      <Stack.Screen
+        name="Affiliated"
+        component={Affiliations}
+        options={{ headerShown: false }}
+      />
+
+      <Stack.Screen
+        name="List"
+        component={MedList}
+        options={{ title: "Tracheostomy Procedures" }}
+      />
+
+      <Stack.Screen
+        name="Video"
+        component={MedVideo}
+        options={{ title: "Training Video" }}
+      />
+
+      <Stack.Screen
+        name="Links"
+        component={Links}
+        options={{ title: "Resources" }}
+      />
+    </Stack.Navigator>
+  </NavigationContainer>
+);
+
 
 
 export default MainStack
