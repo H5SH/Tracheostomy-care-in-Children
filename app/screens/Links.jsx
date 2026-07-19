@@ -21,9 +21,6 @@ const Links = () => {
             <TouchableOpacity onPress={() => openLink("https://www.ncbi.nlm.nih.gov/books/NBK593189/")}>
                 <Text style={{ color: "#3498DB", fontSize: 18, marginBottom: 10 }}>National Library of Medicine</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => openLink("https://www.youtube.com/watch?v=bivibBhUdcc")}>
-                <Text style={{ color: "#3498DB", fontSize: 18, marginBottom: 10 }}>What is Tracheostomy (Youtube)</Text>
-            </TouchableOpacity>
         </View>
     );
 };
