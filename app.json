@@ -6,20 +6,15 @@
     "orientation": "portrait",
     "icon": "./assets/FAHSIcon.png",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/FAHSIcon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "assetBundlePatterns": [
-      "**/*"
+      "assets/**/*"
     ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.uol.fahs"
     },
     "android": {
-       "versionCode": 3,
+      "versionCode": 3,
       "adaptiveIcon": {
         "foregroundImage": "./assets/FAHSIcon.png",
         "backgroundColor": "#ffffff"
@@ -33,6 +28,30 @@
       "eas": {
         "projectId": "b889ecdd-6d6d-4a52-987d-786b59265e1f"
       }
-    }
+    },
+    "plugins": [
+      [
+        "./plugins/withAndroidAssetPacks",
+        {
+          "packs": [
+            {
+              "name": "urdu_videos",
+              "sourceDir": "./asset-packs/urdu_videos",
+              "deliveryType": "install-time"
+            }
+          ]
+        }
+      ],
+      "expo-status-bar",
+      "expo-video",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/FAHSIcon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ]
+    ]
   }
 }

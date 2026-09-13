@@ -52,53 +52,53 @@ const images = {
 
 }
 
-const English={
-    'Introduction': require('../../assets/Videos/English/IntroductionEnglish.mp4'),//5
-    // 'Tracheostomy Suction Requirement': require('../../assets/Videos/TracheostomySuctionRequirmnt_video.mp4'),
-    // 'Tracheal suctioning': require('../../assets/Videos/TracheostomySuctionRequirmnt_video.mp4'),//10
-    // 'Clear inner cannula': require('../../assets/Videos/English/CleanYourInnerCannulaEnglish.mp4'),//3
-    'Hand hygiene': require('../../assets/Videos/English/HandHygieneEnglish.mp4'),//4
-    // 'Clean suction catheter': require('../../assets/Videos/English/CleanSuctionCatheterEnglish.mp4'),//9
-    // 'Inspect skin around tracheostomy tube': require('../../assets/Videos/English/InspectionAroundSkinEnglish.mp4'),//8
-    'Clean skin around stoma': require('../../assets/Videos/English/CleanSkinAroundStomaEnglish.mp4'),//2
-    'Providing oral hygiene': require('../../assets/Videos/English/OralHygieneEnglish.mp4'),//1
-    'Ensure patency of the airway (tracheostomy tube)': require('../../assets/Videos/English/SuctionAirwayPotencyEnglish.mp4'),
-    // 'Trachestomy Care at Home': require('../../assets/Videos/TracheostomyCareInHome.mp4'),
-    // 'Routine Trach Change': require('../../assets/Videos/RoutineTrachChange.webm'),
-    'Putting guaze on the trachostomy site': require('../../assets/Videos/English/GauzeOnTracheostomySiteEnglish.mp4'),
+// Videos are no longer bundled with `require()`. They ship in the `urdu_videos` Google Play
+// Asset Delivery install-time pack and are addressed by their path inside that pack, so these
+// values are plain strings resolved at runtime by `app/media/assetPackVideos.js`.
+// Source of truth for the files: `asset-packs/urdu_videos/videos/urdu/`.
+const Urdu = {
+    // 'Introduction': no Urdu recording exists yet.
+    // 'Tracheostomy Suction Requirement': not recorded in Urdu.
+    // 'Tracheal suctioning': not recorded in Urdu.
+    'Clear inner cannula': 'videos/urdu/CleanYourInnerCannulaUrdu.mp4',//3
+    'Hand hygiene': 'videos/urdu/HandHygieneUrdu.mp4',//4
+    'Clean suction catheter': 'videos/urdu/CleanSuctionCatheterUrdu.mp4',//9
+    'Inspect skin around tracheostomy tube': 'videos/urdu/InspectionAroundSkinUrdu.mp4',//8
+    'Clean skin around stoma': 'videos/urdu/CleanSkinAroundStomaUrdu.mp4',//2
+    'Providing oral hygiene': 'videos/urdu/OralHygieneUrdu.mp4',//1
+    'Ensure patency of the airway (tracheostomy tube)': 'videos/urdu/SuctionAirwayPotencyUrdu.mp4',
+    'Putting guaze on the trachostomy site': 'videos/urdu/GauzeOnTracheostomySiteUrdu.mp4',
 }
 
-// const Urdu={
-    // 'Introduction': require('../../assets/Videos/Introduction_video.mp4'),//5
-    // 'Tracheostomy Suction Requirement': require('../../assets/Videos/TracheostomySuctionRequirmnt_video.mp4'),
-    // // 'Tracheal suctioning': require('../../assets/Videos/TracheostomySuctionRequirmnt_video.mp4'),//10
-    // 'Clear inner cannula': require('../../assets/Videos/Urdu/CleanYourInnerCannulaUrdu.mp4'),//3
-    // 'Hand hygiene': require('../../assets/Videos/Urdu/HandHygieneUrdu.mp4'),//4
-    // 'Clean suction catheter': require('../../assets/Videos/Urdu/CleanSuctionCatheterUrdu.mp4'),//9
-    // 'Inspect skin around tracheostomy tube': require('../../assets/Videos/Urdu/InspectionAroundSkinUrdu.mp4'),//8
-    // 'Clean skin around stoma': require('../../assets/Videos/Urdu/CleanSkinAroundStomaUrdu.mp4'),//2
-    // 'Providing oral hygiene': require('../../assets/Videos/Urdu/OralHygieneUrdu.mp4'),//1
-    // 'Ensure patency of the airway (tracheostomy tube)': require('../../assets/Videos/Urdu/SuctionAirwayPotencyUrdu.mp4'),
-    // 'Trachestomy Care at Home': require('../../assets/Videos/TracheostomyCareInHome.mp4'),
-    // 'Routine Trach Change': require('../../assets/Videos/RoutineTrachChange.webm'),
-    // 'Putting guaze on the trachostomy site': require('../../assets/Videos/Urdu/GauzeOnTracheostomySiteUrdu.mp4'),
+// The English collection is incomplete, so the English option is hidden from the UI for now.
+// The files are untouched under `assets/Videos/English/`; restoring the option means moving them
+// into an `english_videos` asset pack and adding an entry to `languages` below.
+// const English = {
+//     'Introduction': 'videos/english/IntroductionEnglish.mp4',//5
+//     'Hand hygiene': 'videos/english/HandHygieneEnglish.mp4',//4
+//     'Clean skin around stoma': 'videos/english/CleanSkinAroundStomaEnglish.mp4',//2
+//     'Providing oral hygiene': 'videos/english/OralHygieneEnglish.mp4',//1
+//     'Ensure patency of the airway (tracheostomy tube)': 'videos/english/SuctionAirwayPotencyEnglish.mp4',
+//     'Putting guaze on the trachostomy site': 'videos/english/GauzeOnTracheostomySiteEnglish.mp4',
 // }
 
-// const Punjabi={
-//     'Introduction': require('../../assets/Videos/Introduction_video.mp4'),//5
-//     'Tracheostomy Suction Requirement': require('../../assets/Videos/TracheostomySuctionRequirmnt_video.mp4'),
-//     // 'Tracheal suctioning': require('../../assets/Videos/TracheostomySuctionRequirmnt_video.mp4'),//10
-//     'Clear inner cannula': require('../../assets/Videos/CleanYourInnerCannula.mp4'),//3
-//     'Hand hygiene': require('../../assets/Videos/Punjabi/HandHygienePunjabi.mp4'),//4
-//     'Clean suction catheter': require('../../assets/Videos/TracheostomySuction.mp4'),//9
-//     'Inspect skin around tracheostomy tube': require('../../assets/Videos/TracheostomySiteCare.mp4'),//8
-//     'Clean skin around stoma': require('../../assets/Videos/CleanSkinAroundTracheostomyTube.mp4'),//2
-//     'Providing oral hygiene': require('../../assets/Videos/CleanOralPart_video.mp4'),//1
-//     'Ensure patency of the airway (tracheostomy tube)': require('../../assets/Videos/CleanYourInnerCannula.mp4'),
-//     'Trachestomy Care at Home': require('../../assets/Videos/TracheostomyCareInHome.mp4'),
-//     'Routine Trach Change': require('../../assets/Videos/RoutineTrachChange.webm'),
-//     'Putting guaze on the trachostomy site': require('../../assets/Videos/RoutineTrachChange.webm'),
+// Punjabi currently has a single recording, so the option is hidden from the UI for now.
+// const Punjabi = {
+//     'Hand hygiene': 'videos/punjabi/HandHygienePunjabi.mp4',//4
 // }
-export { names, details, English, 
-    // Urdu, 
-    images };
+
+/**
+ * Languages offered on the video screen, in display order. The first entry is the default.
+ * Add a language back by shipping its videos in an asset pack and listing it here.
+ */
+const languages = [
+    { key: 'urdu', label: 'Urdu', videos: Urdu },
+];
+
+const defaultLanguage = languages[0];
+
+export {
+    names, details, images,
+    Urdu,
+    languages, defaultLanguage,
+};
