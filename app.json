@@ -2,7 +2,7 @@
   "expo": {
     "name": "Tracheostomy Care",
     "slug": "languages",
-    "version": "1.1.1",
+    "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/FAHSIcon.png",
     "userInterfaceStyle": "light",
@@ -14,10 +14,10 @@
       "bundleIdentifier": "com.uol.fahs"
     },
     "android": {
-      "versionCode": 3,
+      "versionCode": 5,
       "adaptiveIcon": {
         "foregroundImage": "./assets/FAHSIcon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#F0FCFA"
       },
       "package": "com.h5sh.languages"
     },
@@ -38,6 +38,11 @@
               "name": "urdu_videos",
               "sourceDir": "./asset-packs/urdu_videos",
               "deliveryType": "install-time"
+            },
+            {
+              "name": "english_videos",
+              "sourceDir": "./asset-packs/english_videos",
+              "deliveryType": "install-time"
             }
           ]
         }
@@ -49,9 +54,10 @@
         {
           "image": "./assets/FAHSIcon.png",
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#F0FCFA"
         }
-      ]
+      ],
+      "expo-font"
     ]
   }
 }

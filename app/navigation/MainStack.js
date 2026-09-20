@@ -1,58 +1,57 @@
-import React from "react";
+import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { NavigationContainer } from "@react-navigation/native";
-import MedList from "../screens/MedList";
-import MedDetail from "../screens/MedDetail";
-import MedVideo from "../screens/MedVideo";
-import Affiliations from "../screens/Affiliations";
-import Links from "../screens/Links";
+import { NavigationContainer } from '@react-navigation/native';
 
-const Stack = createStackNavigator()
+import { useLanguage } from '../i18n/LanguageProvider';
+import Welcome from '../screens/Welcome';
+import MedList from '../screens/MedList';
+import MedVideo from '../screens/MedVideo';
+import Links from '../screens/Links';
+import { colors } from '../ui/theme';
 
-const MainStack = () => (
-  <NavigationContainer>
-    <Stack.Navigator
-      initialRouteName="Affiliated"
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: "#ffffff",
-        },
-        headerTintColor: "#111827", // dark readable text
-        headerTitleStyle: {
-          fontWeight: "600",
-          fontSize: 18,
-        },
-        headerTitleAlign: "center",
-        headerShadowVisible: true, // subtle modern shadow
-      }}
-    >
-      <Stack.Screen
-        name="Affiliated"
-        component={Affiliations}
-        options={{ headerShown: false }}
-      />
+const Stack = createStackNavigator();
 
-      <Stack.Screen
-        name="List"
-        component={MedList}
-        options={{ title: "Tracheostomy Procedures" }}
-      />
+const navigationTheme = {
+  dark: false,
+  colors: {
+    primary: colors.accent,
+    background: colors.canvas,
+    card: colors.canvas,
+    text: colors.ink,
+    border: 'transparent',
+    notification: colors.accent,
+  },
+};
 
-      <Stack.Screen
-        name="Video"
-        component={MedVideo}
-        options={{ title: "Training Video" }}
-      />
+const MainStack = () => {
+  // Read inside the component so header titles re-render when the language changes.
+  const { t } = useLanguage();
 
-      <Stack.Screen
-        name="Links"
-        component={Links}
-        options={{ title: "Resources" }}
-      />
-    </Stack.Navigator>
-  </NavigationContainer>
-);
+  return (
+    <NavigationContainer theme={navigationTheme}>
+      <Stack.Navigator
+        initialRouteName="Welcome"
+        screenOptions={{
+          headerStyle: { backgroundColor: colors.canvas },
+          headerTintColor: colors.accent,
+          headerTitleStyle: {
+            fontWeight: '700',
+            fontSize: 17,
+            color: colors.ink,
+          },
+          headerTitleAlign: 'center',
+          headerShadowVisible: false,
+          headerBackTitleVisible: false,
+          cardStyle: { backgroundColor: colors.canvas },
+        }}
+      >
+        <Stack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
+        <Stack.Screen name="List" component={MedList} options={{ title: t('nav.list') }} />
+        <Stack.Screen name="Video" component={MedVideo} options={{ title: t('nav.video') }} />
+        <Stack.Screen name="Links" component={Links} options={{ title: t('nav.links') }} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
 
-
-
-export default MainStack
+export default MainStack;

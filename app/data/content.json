@@ -1,0 +1,238 @@
+{
+  "_readme": "Single source of truth for languages, UI text and procedures. See README.md > 'Adding a language' before editing.",
+  "defaultLanguage": "urdu",
+  "fallbackLanguage": "english",
+  "languages": [
+    {
+      "key": "urdu",
+      "label": "اردو",
+      "englishName": "Urdu",
+      "direction": "rtl",
+      "videoDir": "videos/urdu",
+      "assetPack": "urdu_videos"
+    },
+    {
+      "key": "english",
+      "label": "English",
+      "englishName": "English",
+      "direction": "ltr",
+      "videoDir": "videos/english",
+      "assetPack": "english_videos"
+    }
+  ],
+  "ui": {
+    "english": {
+      "welcome.eyebrow": "Care at home",
+      "welcome.title": "Tracheostomy\nCare",
+      "welcome.subtitle": "Short video guides for looking after a child with a tracheostomy, made by clinicians.",
+      "welcome.feature.procedures": "{count} step-by-step procedures",
+      "welcome.feature.offline": "Works fully offline, no data needed",
+      "welcome.feature.narration": "Narrated in English",
+      "welcome.language": "Choose a language",
+      "welcome.cta": "Get started",
+      "list.eyebrow": "Video guides",
+      "list.title": "Procedures",
+      "list.subtitle": "Tap a procedure to watch it. Every video plays offline.",
+      "list.empty": "No videos are available in this language yet.",
+      "list.resources": "Care management guides",
+      "card.watch": "Watch video",
+      "video.unavailable": "Not available in {language} yet.",
+      "links.eyebrow": "Further reading",
+      "links.title": "Care management",
+      "links.subtitle": "Trusted clinical guidance from published sources. These pages need an internet connection.",
+      "links.opens": "Opens in your browser",
+      "nav.list": "Procedures",
+      "nav.video": "Procedure",
+      "nav.links": "Resources"
+    },
+    "urdu": {
+      "welcome.eyebrow": "گھر میں دیکھ بھال",
+      "welcome.title": "ٹریکیوسٹومی\nکی دیکھ بھال",
+      "welcome.subtitle": "ٹریکیوسٹومی والے بچے کی دیکھ بھال کے لیے مختصر ویڈیو رہنمائی، ماہرینِ صحت کی تیار کردہ۔",
+      "welcome.feature.procedures": "{count} مرحلہ وار طریقہ کار",
+      "welcome.feature.offline": "انٹرنیٹ کے بغیر مکمل کام کرتی ہے",
+      "welcome.feature.narration": "مکمل اردو میں",
+      "welcome.language": "زبان منتخب کریں",
+      "welcome.cta": "شروع کریں",
+      "list.eyebrow": "ویڈیو رہنمائی",
+      "list.title": "طریقہ کار",
+      "list.subtitle": "دیکھنے کے لیے کسی طریقہ کار پر دبائیں۔ ہر ویڈیو انٹرنیٹ کے بغیر چلتی ہے۔",
+      "list.empty": "اس زبان میں ابھی کوئی ویڈیو دستیاب نہیں ہے۔",
+      "list.resources": "دیکھ بھال کے رہنما اصول",
+      "card.watch": "ویڈیو دیکھیں",
+      "video.unavailable": "یہ ویڈیو ابھی {language} میں دستیاب نہیں ہے۔",
+      "links.eyebrow": "مزید مطالعہ",
+      "links.title": "دیکھ بھال کا انتظام",
+      "links.subtitle": "مستند طبی اداروں کی شائع کردہ رہنمائی۔ ان صفحات کے لیے انٹرنیٹ درکار ہے۔",
+      "links.opens": "آپ کے براؤزر میں کھلے گا",
+      "nav.list": "طریقہ کار",
+      "nav.video": "طریقہ کار",
+      "nav.links": "وسائل"
+    }
+  },
+  "procedures": [
+    {
+      "id": "introduction",
+      "image": "Introduction.jpg",
+      "title": {
+        "english": "Introduction",
+        "urdu": "تعارف"
+      },
+      "description": {
+        "english": "An introduction to tracheostomy care in children.",
+        "urdu": "بچوں میں ٹریکیوسٹومی کی دیکھ بھال کا تعارف۔"
+      },
+      "videos": {
+        "english": "IntroductionEnglish.mp4"
+      }
+    },
+    {
+      "id": "hand-hygiene",
+      "image": "handHygiene.jpg",
+      "title": {
+        "english": "Hand hygiene",
+        "urdu": "ہاتھوں کی صفائی"
+      },
+      "description": {
+        "english": "Keeping hands clean to prevent the spread of germs and infection. Covers washing with soap and water and using hand sanitiser.",
+        "urdu": "جراثیم اور انفیکشن سے بچاؤ کے لیے ہاتھوں کو صاف رکھنا۔ اس میں صابن اور پانی سے دھونا اور سینیٹائزر کا استعمال شامل ہے۔"
+      },
+      "videos": {
+        "english": "HandHygieneEnglish.mp4",
+        "urdu": "HandHygieneUrdu.mp4"
+      }
+    },
+    {
+      "id": "clean-skin-around-stoma",
+      "image": "cleanSkinAroundStoma.jpg",
+      "title": {
+        "english": "Clean skin around stoma",
+        "urdu": "سٹوما کے اردگرد جلد کی صفائی"
+      },
+      "description": {
+        "english": "Cleaning the skin around the tracheostomy opening to prevent infection and irritation, then patting it dry.",
+        "urdu": "انفیکشن اور جلن سے بچانے کے لیے ٹریکیوسٹومی کے سوراخ کے اردگرد جلد کو صاف کرنا اور پھر آہستگی سے خشک کرنا۔"
+      },
+      "videos": {
+        "english": "CleanSkinAroundStomaEnglish.mp4",
+        "urdu": "CleanSkinAroundStomaUrdu.mp4"
+      }
+    },
+    {
+      "id": "oral-hygiene",
+      "image": "providingOralHygiene.jpg",
+      "title": {
+        "english": "Providing oral hygiene",
+        "urdu": "منہ کی صفائی"
+      },
+      "description": {
+        "english": "Cleaning the mouth and teeth to prevent dental problems and infection, especially for a child who cannot do this themselves.",
+        "urdu": "دانتوں کے مسائل اور انفیکشن سے بچاؤ کے لیے منہ اور دانتوں کی صفائی، خاص طور پر اُس بچے کے لیے جو خود یہ نہیں کر سکتا۔"
+      },
+      "videos": {
+        "english": "OralHygieneEnglish.mp4",
+        "urdu": "OralHygieneUrdu.mp4"
+      }
+    },
+    {
+      "id": "airway-patency",
+      "image": "SuctionPressureAirwayPotency.jpg",
+      "title": {
+        "english": "Ensure patency of the airway",
+        "urdu": "سانس کی نالی کو کھلا رکھنا"
+      },
+      "description": {
+        "english": "Keeping the tracheostomy tube clear and free from obstruction so the child can breathe properly.",
+        "urdu": "ٹریکیوسٹومی ٹیوب کو صاف اور رکاوٹ سے پاک رکھنا تاکہ بچہ آسانی سے سانس لے سکے۔"
+      },
+      "videos": {
+        "english": "SuctionAirwayPotencyEnglish.mp4",
+        "urdu": "SuctionAirwayPotencyUrdu.mp4"
+      }
+    },
+    {
+      "id": "gauze-on-site",
+      "image": "GauzeOnTracheostomySite.jpeg",
+      "title": {
+        "english": "Putting gauze on the tracheostomy site",
+        "urdu": "ٹریکیوسٹومی کی جگہ پر گاز رکھنا"
+      },
+      "description": {
+        "english": "Placing a clean dressing around the tracheostomy site to absorb secretions and protect the skin.",
+        "urdu": "رطوبت جذب کرنے اور جلد کی حفاظت کے لیے ٹریکیوسٹومی کی جگہ کے گرد صاف گاز رکھنا۔"
+      },
+      "videos": {
+        "english": "GauzeOnTracheostomySiteEnglish.mp4",
+        "urdu": "GauzeOnTracheostomySiteUrdu.mp4"
+      }
+    },
+    {
+      "id": "inner-cannula",
+      "image": "clearInnerCannula.jpg",
+      "title": {
+        "english": "Clean the inner cannula",
+        "urdu": "اندرونی کینولا کی صفائی"
+      },
+      "description": {
+        "english": "Removing and cleaning the inner part of the tracheostomy tube to prevent blockage and keep airflow clear.",
+        "urdu": "رکاوٹ سے بچنے اور ہوا کے بہاؤ کو برقرار رکھنے کے لیے ٹریکیوسٹومی ٹیوب کا اندرونی حصہ نکال کر صاف کرنا۔"
+      },
+      "videos": {
+        "english": "CleanYourInnerCannulaEnglish.mp4",
+        "urdu": "CleanYourInnerCannulaUrdu.mp4"
+      }
+    },
+    {
+      "id": "suction-catheter",
+      "image": "cleanSuctionCatheter.jpg",
+      "title": {
+        "english": "Clean the suction catheter",
+        "urdu": "سکشن کیتھیٹر کی صفائی"
+      },
+      "description": {
+        "english": "Clearing mucus and secretions from the catheter used for suctioning, to prevent contamination and infection.",
+        "urdu": "آلودگی اور انفیکشن سے بچاؤ کے لیے سکشن میں استعمال ہونے والے کیتھیٹر سے بلغم اور رطوبت صاف کرنا۔"
+      },
+      "videos": {
+        "english": "CleanSuctionCatheterEnglish.mp4",
+        "urdu": "CleanSuctionCatheterUrdu.mp4"
+      }
+    },
+    {
+      "id": "inspect-skin",
+      "image": "inspectionSkinAroundTracheostomyTube.jpg",
+      "title": {
+        "english": "Inspect skin around the tube",
+        "urdu": "ٹیوب کے اردگرد جلد کا معائنہ"
+      },
+      "description": {
+        "english": "Checking the skin around the tracheostomy tube for irritation, infection or pressure injury.",
+        "urdu": "ٹریکیوسٹومی ٹیوب کے اردگرد جلد کو جلن، انفیکشن یا دباؤ کے زخم کے لیے جانچنا۔"
+      },
+      "videos": {
+        "english": "InspectionAroundSkinEnglish.mp4",
+        "urdu": "InspectionAroundSkinUrdu.mp4"
+      }
+    }
+  ],
+  "resources": [
+    {
+      "id": "rch-melbourne",
+      "title": "The Royal Children's Hospital Melbourne",
+      "url": "https://www.rch.org.au/rchcpg/hospital_clinical_guideline_index/Tracheostomy_Management_Guidelines/",
+      "description": {
+        "english": "Clinical guidelines for tracheostomy management in children.",
+        "urdu": "بچوں میں ٹریکیوسٹومی کے انتظام سے متعلق طبی رہنما اصول۔"
+      }
+    },
+    {
+      "id": "nlm",
+      "title": "National Library of Medicine",
+      "url": "https://www.ncbi.nlm.nih.gov/books/NBK593189/",
+      "description": {
+        "english": "Reference material on tracheostomy care and complications.",
+        "urdu": "ٹریکیوسٹومی کی دیکھ بھال اور پیچیدگیوں سے متعلق حوالہ جاتی مواد۔"
+      }
+    }
+  ]
+}

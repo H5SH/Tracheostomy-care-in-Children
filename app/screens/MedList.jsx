@@ -1,76 +1,61 @@
-import { FlashList } from "@shopify/flash-list";
-import { View, Text, TouchableOpacity } from "react-native";
-import { names, images } from "../data/deases";
-import { ImageSquareCard } from "../static/liteNative/components";
+import React, { useMemo } from 'react';
+import { Text, View } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
+
+import { proceduresFor } from '../data/catalog';
+import { useLanguage } from '../i18n/LanguageProvider';
+import { AppButton, PageHeading, ProcedureCard, Screen } from '../ui/components';
+import { spacing, type } from '../ui/theme';
 
 function MedList({ navigation }) {
+  const { t, languageKey, textStyle } = useLanguage();
+
+  // Only procedures that actually have a video in the selected language.
+  const procedures = useMemo(() => proceduresFor(languageKey), [languageKey]);
+
   const renderItem = ({ item }) => (
-    <View style={{ marginBottom: 16 }}>
-      <ImageSquareCard
-        Title={item}
-        source={images[item]}
-        onPress={() => navigation.navigate("Video", { name: item })}
-      />
-    </View>
+    <ProcedureCard
+      title={item.title}
+      image={item.image}
+      caption={t('card.watch')}
+      onPress={() => navigation.navigate('Video', { procedureId: item.id })}
+    />
   );
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: "#f9fafb", // clean modern background
-        paddingHorizontal: 14,
-        paddingTop: 20,
-      }}
-    >
-      {/* Title */}
-      <Text
-        style={{
-          fontSize: 26,
-          fontWeight: "bold",
-          marginBottom: 20,
-          color: "#111827",
-        }}
-      >
-        Procedures
-      </Text>
-
-      {/* List */}
+    <Screen>
       <FlashList
-        data={names}
+        data={procedures}
         renderItem={renderItem}
-        estimatedItemSize={120}
-        keyExtractor={(item) => item}
+        keyExtractor={(item) => item.id}
+        extraData={languageKey}
         showsVerticalScrollIndicator={false}
+        ItemSeparatorComponent={() => <View style={{ height: spacing.md }} />}
+        contentContainerStyle={{ paddingBottom: spacing.xxl }}
+        ListHeaderComponent={
+          <PageHeading
+            eyebrow={t('list.eyebrow')}
+            title={t('list.title')}
+            subtitle={t('list.subtitle')}
+            style={{ paddingTop: spacing.sm, paddingBottom: spacing.xl }}
+          />
+        }
+        ListEmptyComponent={
+          <Text style={[type.body, textStyle, { paddingVertical: spacing.xl }]}>
+            {t('list.empty')}
+          </Text>
+        }
+        ListFooterComponent={
+          <AppButton
+            variant="secondary"
+            label={t('list.resources')}
+            icon="open-outline"
+            onPress={() => navigation.navigate('Links')}
+            style={{ marginTop: spacing.xl }}
+          />
+        }
       />
-
-      {/* Bottom Button */}
-      <TouchableOpacity
-        onPress={() => navigation.navigate("Links")}
-        style={{
-          marginTop: 10,
-          marginBottom: 20,
-          backgroundColor: "#2563eb",
-          paddingVertical: 16,
-          borderRadius: 14,
-          alignItems: "center",
-          shadowColor: "#000",
-          shadowOpacity: 0.15,
-          shadowRadius: 5,
-          elevation: 4,
-        }}
-      >
-        <Text
-          style={{
-            color: "white",
-            fontSize: 16,
-            fontWeight: "600",
-          }}
-        >
-          Tracheostomy Care Management
-        </Text>
-      </TouchableOpacity>
-    </View>
+    </Screen>
   );
 }
 

@@ -120,10 +120,15 @@ npx expo run:android                           # dev build: packs are merged int
 eas build --platform android --profile production   # AAB with the asset pack
 ```
 
-A **development build is required**. Expo Go ships a fixed set of Expo modules and cannot load
-custom native code at *any* SDK version, so inside Expo Go `resolveVideoSource` returns `null` and
-every video shows the unavailable panel. Matching your Expo Go app's SDK version does not change
-this — use `npx expo run:android` or an EAS development build instead.
+**Expo Go works on iOS but not Android.** Expo Go ships a fixed set of Expo modules and cannot
+load custom native code at *any* SDK version. On iOS that does not matter — the videos are bundled
+assets, served from the Metro dev server, so the app is fully testable in Expo Go. On Android the
+`AssetPacks` module is missing in Expo Go, so `resolveVideoSource` returns `null` and every video
+shows the unavailable panel; use `npx expo run:android` or an EAS development build there.
+
+Note that offline playback is an Android production behaviour. In Expo Go the videos stream from
+your computer, so pulling the network will stop them — that is the dev server going away, not a
+bug in the asset pack.
 
 Verified against Expo SDK 57 (React Native 0.86, React 19.2).
 
@@ -148,8 +153,30 @@ makes the videos look missing on device for reasons that have nothing to do with
 - Pack names must start with a letter and contain only letters, digits and underscores. The
   config plugin enforces this and fails the build early otherwise.
 
-## iOS
+## iOS and other platforms
 
-PAD is Android-only. On iOS the `AssetPacks` module is absent, `resolveVideoSource` returns `null`
-and the video screen shows the unavailable panel. Shipping video on iOS needs a separate mechanism
-(On-Demand Resources, or bundling the files directly).
+Play Asset Delivery is Android-only, so the video resolver is split by platform. Metro picks the
+file matching the build target and never walks the other one:
+
+| File | Used by | How videos are delivered |
+| --- | --- | --- |
+| `app/media/assetPackVideos.android.js` | Android | Play Asset Delivery install-time pack |
+| `app/media/assetPackVideos.js` | iOS, web, Expo Go | bundled as ordinary React Native assets |
+
+Both read from the same files in `asset-packs/urdu_videos/` — there is one copy on disk, only the
+delivery mechanism differs, and `app/data/deases.js` stays the single source of truth for which
+video belongs to which procedure.
+
+The split is what keeps the Android APK lean. Because Metro never walks the iOS module when
+building for Android, its `require()` calls do not pull the videos into the APK. Confirm after any
+change to these files:
+
+```bash
+npx expo export --platform android   # asset list must contain no .mp4 (~3 MB total)
+npx expo export --platform ios       # 8 mp4 assets (~142 MB total)
+```
+
+iOS therefore ships the videos inside the app, which is well under the App Store's size ceiling but
+does make the download large. If that becomes a problem, Apple's On-Demand Resources tagged for
+initial install is the closest equivalent to an install-time asset pack; it needs custom native
+code and would replace this module.
