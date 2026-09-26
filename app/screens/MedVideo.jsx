@@ -167,6 +167,10 @@ function MedVideo({ route }) {
           style={[
             {
               flex: 1,
+              // A flex item will not shrink below its content's intrinsic size unless told to,
+              // and the video's intrinsic size is its full 720x1280. Without this the box grows
+              // to 1429px on a 390px-tall landscape screen and the picture runs off the bottom.
+              minHeight: 0,
               width: '100%',
               borderRadius: radius.lg,
               backgroundColor: colors.videoBg,
@@ -178,7 +182,15 @@ function MedVideo({ route }) {
           {playingVideo ? (
             <VideoView
               player={player}
-              style={{ width: '100%', height: '100%' }}
+              // `flex: 1` rather than `height: '100%'`: the parent is flex-sized with no explicit
+              // height, so a percentage height has nothing to resolve against and the view grows
+              // to the video's own aspect ratio instead of the box it is in. Portrait hid it —
+              // the natural height was close enough — but in landscape the picture overflowed the
+              // screen and pushed the title out of view.
+              // `minHeight: 0` as well as `flex: 1`: a flex item refuses to shrink below its
+              // content's intrinsic size by default, and this one's content is a 720x1280 frame.
+              // Without it the video stayed 1429px tall on a 390px landscape screen.
+              style={{ flex: 1, minHeight: 0 }}
               contentFit="contain"
               allowsFullscreen
               allowsPictureInPicture

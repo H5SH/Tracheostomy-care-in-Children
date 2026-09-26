@@ -13,7 +13,11 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.canvas }}>
       <SafeAreaProvider>
-        <StatusBar style="dark" backgroundColor={colors.canvas} />
+        {/* No `backgroundColor`: it routes to Android's `Window.setStatusBarColor`, which is
+            deprecated from Android 15 and flagged by the Play Console. The build is already
+            edge-to-edge (`edgeToEdgeEnabled` in gradle.properties), so the bar is transparent and
+            the canvas behind it shows through — the appearance is unchanged. */}
+        <StatusBar style="dark" />
         <LanguageProvider>
           <MainStack />
         </LanguageProvider>
