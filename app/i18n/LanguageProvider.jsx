@@ -1,9 +1,10 @@
 /**
  * App-wide language state and string lookup.
  *
- * Urdu is the default. The chosen language is held in memory only — there is no storage
- * dependency in this project, so the app opens in the default language every launch and the
- * welcome screen is where you switch.
+ * The app opens in the device's own language when it has videos for it, and in
+ * `defaultLanguage` (English) otherwise — see `deviceLanguage.js`. The choice is held in memory
+ * only; there is no storage dependency in this project, so switching on the welcome screen
+ * lasts for the session and the next launch detects again.
  *
  * Urdu is right-to-left. Rather than calling `I18nManager.forceRTL`, which only takes effect
  * after an app restart, direction is applied per-component through `textStyle` and `rowDirection`
@@ -18,6 +19,7 @@ import {
   languages,
   uiStrings,
 } from '../data/catalog';
+import { detectLanguageKey } from './deviceLanguage';
 
 const LanguageContext = createContext(null);
 
@@ -30,7 +32,11 @@ function interpolate(template, vars) {
 }
 
 export function LanguageProvider({ children }) {
-  const [languageKey, setLanguageKey] = useState(defaultLanguageKey);
+  // Resolved once, lazily: the device locale cannot change while the app is running, and doing
+  // it in the initialiser means the first paint is already in the right language.
+  const [languageKey, setLanguageKey] = useState(
+    () => detectLanguageKey(languages) ?? defaultLanguageKey
+  );
 
   const language = getLanguage(languageKey);
   const isRTL = language.direction === 'rtl';

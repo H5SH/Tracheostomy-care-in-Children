@@ -39,23 +39,35 @@ function resolveImage(fileName) {
 }
 
 /**
- * Procedures that have a video in this language, localized and ready to render.
- * A procedure with no recording in the chosen language is left out entirely — that is why
- * "Introduction" does not appear in Urdu.
+ * Every procedure this language can show, localized and ready to render.
+ *
+ * Picture and narration are separate files: one silent video per procedure, and one audio file per
+ * language per procedure. That is why a language costs kilobytes rather than another copy of the
+ * video, and why one language's narration can be replaced without rebuilding anything else.
+ *
+ * **A procedure with no narration in the chosen language is left out entirely.** An earlier
+ * version played the English recording instead, which meant an Urdu user tapping the first card —
+ * the introduction, the one procedure Urdu has never had a recording for — got English narration
+ * with no warning. Eight procedures that all speak Urdu beat nine where one surprises you. It is
+ * also what the app did before the other languages were added.
  */
 export function proceduresFor(languageKey) {
   const language = getLanguage(languageKey);
 
   return content.procedures
-    .filter((procedure) => Boolean(procedure.videos?.[language.key]))
+    .filter((procedure) => procedure.video && (procedure.audio ?? []).includes(language.key))
     .map((procedure) => ({
       id: procedure.id,
       title: localize(procedure.title, language.key),
       description: localize(procedure.description, language.key),
       image: resolveImage(procedure.image),
       video: {
-        pack: language.assetPack,
-        path: `${language.videoDir}/${procedure.videos[language.key]}`,
+        pack: content.video.assetPack,
+        path: `${content.video.dir}/${procedure.video}`,
+      },
+      audio: {
+        pack: content.audio.assetPack,
+        path: `${content.audio.dir}/${language.key}/${procedure.id}.m4a`,
       },
     }));
 }

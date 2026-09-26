@@ -1,0 +1,79 @@
+{
+  "_readme": "Fixes for what speech-to-text misheard in the English narration. Each entry is [pattern, replacement], applied case-insensitively in order by 1b-correct.js. The narrator speaks Pakistani-accented English and every model tested returned the same errors, so these are deterministic substitutions, not guesses. Edit this file and re-run the pipeline rather than editing build/transcripts by hand.",
+
+  "terms": [
+    ["\\btrichotomy\\b", "tracheostomy"],
+    ["\\btricosmic\\b", "tracheostomy"],
+    ["\\btricosmy\\b", "tracheostomy"],
+    ["\\btricosmo\\b", "tracheostomy"],
+    ["\\btricomi\\b", "tracheostomy"],
+    ["\\btrek azmat\\b", "tracheostomy"],
+    ["\\bthe cosmic care\\b", "tracheostomy care"],
+    ["\\ba cosmet tube\\b", "a tracheostomy tube"],
+    ["\\bcosmet tube\\b", "tracheostomy tube"],
+    ["\\bclean that i cosmic tube\\b", "clean the tracheostomy tube"],
+    ["\\bclean that our cosmic tube\\b", "clean the tracheostomy tube"],
+    ["\\battract cosmic site\\b", "the tracheostomy site"],
+    ["\\ba cosmic tiles\\b", "tracheostomy ties"],
+    ["\\bcosmic tube\\b", "tracheostomy tube"],
+    ["\\btracheostoma\\b", "tracheostomy"],
+    ["\\btrick or care\\b", "tracheostomy care"],
+    ["\\btracheostomy side\\b", "tracheostomy site"],
+
+    ["\\bcanola\\b", "cannula"],
+    ["\\binsert acne in a cannula\\b", "insert a clean inner cannula"],
+    ["\\bthe new cannula\\b", "the inner cannula"],
+
+    ["\\bsections\\b", "suctions"],
+    ["\\bsection\\b", "suction"],
+    ["\\bsuction the mouth\\b", "suction the mouth"],
+    ["\\bsuction amount again\\b", "suction the mouth again"],
+    ["\\band show the suction tubing\\b", "ensure the suction tubing"],
+    ["\\bin short patient safety\\b", "ensure patient safety"],
+    ["\\bthis infected suction catheters\\b", "disinfecting suction catheters"],
+
+    ["\\btwo cause\\b", "two gauze"],
+    ["\\bor cause\\b", "or gauze"],
+    ["\\bthe cause with\\b", "the gauze with"],
+    ["\\btowel or cause\\b", "towel or gauze"],
+    ["\\bstreetlight gauze\\b", "sterile gauze"],
+
+    ["\\bstroma is a recognized the stroma\\b", "keep the stoma"],
+    ["\\bstroma\\b", "stoma"],
+    ["\\bstomach dressing\\b", "stoma dressing"],
+    ["\\bis tomah care\\b", "stoma care"],
+
+    ["\\boral microsoft\\b", "oral mucosa"],
+    ["\\boxidation saturation\\b", "oxygen saturation"],
+    ["\\bthe creation and mucus\\b", "the secretions and mucus"],
+    ["\\bdepressed slava\\b", "excess saliva"],
+    ["\\bslava\\b", "saliva"],
+    ["\\bdouble dress\\b", "secretions"],
+    ["\\ba ball of a tap water\\b", "a bowl of tap water"],
+    ["\\buse reliant or distilled water\\b", "use boiled or distilled water"],
+    ["\\bwhile seeing the inner cannula\\b", "before cleaning the inner cannula"],
+    ["\\bfrom the outer tube wire cleaning\\b", "from the outer tube before cleaning"],
+
+    ["\\bnot to tight or not to lose\\b", "not too tight or too loose"],
+    ["\\bnot too light or too loose\\b", "not too tight or too loose"],
+    ["\\bhealth providers order\\b", "healthcare provider's order"],
+    ["\\bhealthcare providers instruction\\b", "healthcare provider's instructions"],
+    ["\\bhealthcare provider instruction\\b", "healthcare provider's instructions"],
+    ["\\bpour a quite amount\\b", "pour an adequate amount"],
+    ["\\bnamaste dried skin pack the skin\\b", "number five, dry the skin, pat the skin"],
+    ["\\bnumber 10 remove excess\\b", "number three, remove excess"],
+    ["\\bnumber six one is monitoring\\b", "number six, monitoring"],
+    ["\\bimages preparedness\\b", "emergency preparedness"],
+    ["\\brequires case to attention\\b", "requires careful attention"],
+    ["\\bsigns of infection or complicated\\b", "signs of infection or complications"],
+    ["\\bevery two to four days as per needed\\b", "every two to four hours as needed"],
+    ["\\ball these method\\b", "all these methods"]
+  ],
+
+  "flagForReview": [
+    "a dry cleaner",
+    "number 5 skin pack",
+    "But following these steps",
+    "Then put it on."
+  ]
+}

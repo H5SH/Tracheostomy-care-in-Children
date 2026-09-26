@@ -1,19 +1,20 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { VideoView, useVideoPlayer } from 'expo-video';
+import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 
 import { procedureFor } from '../data/catalog';
 import { useLanguage } from '../i18n/LanguageProvider';
-import { resolveVideoSource } from '../media/assetPackVideos';
+import { resolveAudioSource, resolveVideoSource } from '../media/assetPackVideos';
 import { Screen } from '../ui/components';
 import { colors, radius, shadow, spacing, type } from '../ui/theme';
 
 function MedVideo({ route }) {
   const { procedureId } = route.params;
   const insets = useSafeAreaInsets();
-  const { t, language, languageKey, textStyle } = useLanguage();
+  const { t, language, languageKey, textStyle, rowDirection } = useLanguage();
 
   // The language is chosen on the welcome screen and applies app-wide, so this screen just
   // plays whatever the current language has.
@@ -23,21 +24,132 @@ function MedVideo({ route }) {
   );
 
   const playingVideo = useMemo(() => resolveVideoSource(procedure?.video), [procedure]);
+  const playingAudio = useMemo(() => resolveAudioSource(procedure?.audio), [procedure]);
 
+  /**
+   * Picture and narration are separate files, so two players have to be kept together.
+   *
+   * The video carries no audio track at all — one silent copy serves every language — and the
+   * narration comes from `audios/<language>/`. The video is the clock; the narration is nudged
+   * back into line when it wanders, which also covers the loop, where the video jumps to zero.
+   */
   const player = useVideoPlayer(playingVideo, (player) => {
     player.loop = true;
-    player.play();
+    player.muted = true;
+    // Once per second is enough to catch drift and keeps traffic off the bridge. At the old
+    // half-second it was issuing twice the seeks for no benefit.
+    player.timeUpdateEventInterval = 1;
   });
+
+  const audio = useAudioPlayer(playingAudio);
+  const audioStatus = useAudioPlayerStatus(audio);
+  const audioReady = Boolean(playingAudio) && audioStatus?.isLoaded;
+
+  /**
+   * How far the narration may wander before it is pulled back. Generous on purpose: a correction
+   * is an audible jump in speech, so it is worth tolerating a fifth of a second of slip to avoid
+   * one. Sync is measured and reported in `docs/`.
+   */
+  const SYNC_TOLERANCE = 0.25;
+  /** Never correct more often than this, whatever the drift says. */
+  const SYNC_COOLDOWN_MS = 1500;
+
+  const seeking = useRef(false);
+  const lastSeekAt = useRef(0);
+
+  /**
+   * Pulls the narration back to the video's clock.
+   *
+   * The guards matter more than the threshold. `seekTo` is asynchronous, and until it resolves
+   * `currentTime` still reports the old position — so a naive check sees the same drift on the
+   * next tick and queues another seek. On a device that becomes a seek storm: the narration
+   * stutters and the JS thread is busy enough that taps stop registering. One seek in flight at a
+   * time, and a cooldown between them, is what stops it.
+   */
+  const syncAudio = useCallback(
+    (videoTime, { force = false } = {}) => {
+      if (!playingAudio || seeking.current) return;
+
+      const now = Date.now();
+      if (!force && now - lastSeekAt.current < SYNC_COOLDOWN_MS) return;
+      if (!force && Math.abs(videoTime - audio.currentTime) <= SYNC_TOLERANCE) return;
+
+      seeking.current = true;
+      lastSeekAt.current = now;
+      Promise.resolve(audio.seekTo(videoTime))
+        .catch(() => {})
+        .finally(() => {
+          seeking.current = false;
+        });
+    },
+    [audio, playingAudio]
+  );
+
+  /**
+   * Starts both together, once the narration is actually loaded.
+   *
+   * Playing the video the moment it mounts is what made the narration come in late: the video was
+   * already seconds in before the audio had finished loading, and the first correction only
+   * arrived on the next tick. Waiting costs a beat before playback begins and starts them in step.
+   */
+  useEffect(() => {
+    if (!playingVideo) return;
+
+    if (!playingAudio) {
+      player.play();
+      return;
+    }
+    if (!audioReady) return;
+
+    player.currentTime = 0;
+    Promise.resolve(audio.seekTo(0))
+      .catch(() => {})
+      .finally(() => {
+        audio.play();
+        player.play();
+      });
+  }, [playingVideo, playingAudio, audioReady]);
+
+  useEffect(() => {
+    if (!playingAudio) return undefined;
+
+    const onTime = player.addListener('timeUpdate', ({ currentTime }) => syncAudio(currentTime));
+    const onPlaying = player.addListener('playingChange', ({ isPlaying }) => {
+      if (isPlaying) {
+        audio.play();
+        syncAudio(player.currentTime, { force: true });
+      } else {
+        audio.pause();
+      }
+    });
+
+    return () => {
+      onTime?.remove?.();
+      onPlaying?.remove?.();
+    };
+  }, [player, audio, playingAudio, syncAudio]);
 
   useEffect(() => {
     if (playingVideo) {
       player.replace(playingVideo);
-      player.play();
     } else {
       player.pause();
       player.replace(null);
     }
   }, [playingVideo]);
+
+  // Leaving the screen must stop the narration; the video player is torn down for us, but the
+  // audio player outlives the frame it was created in if nothing says otherwise.
+  useEffect(
+    () => () => {
+      try {
+        audio.pause();
+      } catch {
+        // Already released.
+      }
+    },
+    [audio]
+  );
 
   return (
     <Screen gutter={false}>

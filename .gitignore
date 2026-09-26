@@ -38,3 +38,6 @@ yarn-error.*
 # module under android/<packName>/ is generated too, from asset-packs/.
 /android
 /ios
+
+# audio pipeline intermediates (transcripts, per-language audio)
+build/

@@ -2,11 +2,12 @@
  * Shared UI primitives. Every screen is built from these so spacing, radii and the coral accent
  * stay consistent — see `theme.js` for the tokens.
  */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Image,
   Pressable,
+  ScrollView,
   Text,
   View,
 } from 'react-native';
@@ -179,41 +180,164 @@ export function AppButton({
   );
 }
 
-/** Small selectable pill, used for the language selector. */
-export function TogglePill({ label, selected, onPress }) {
+/* -------------------------------------------------------------------------- */
+/* Language switcher                                                          */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Both states of the switcher are one row of these circles, so the control's height is the same
+ * open or closed and the call to action below it never moves.
+ *
+ * 48 rather than `controlHeight.pill`: that token sizes a control around a text label, and a
+ * circle needs to clear the 48dp Android minimum touch target in both axes.
+ */
+const LANGUAGE_CIRCLE = 48;
+const LANGUAGE_GAP = spacing.sm;
+
+/** One circle: a two-letter code, a `+N` count, or an icon. */
+function LanguageCircle({ label, icon, selected, muted, onPress, accessibilityLabel }) {
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      accessibilityState={{ selected }}
+      accessibilityLabel={accessibilityLabel ?? label}
+      accessibilityState={{ selected: Boolean(selected) }}
       style={({ pressed }) => [
         {
-          flexDirection: 'row',
+          width: LANGUAGE_CIRCLE,
+          height: LANGUAGE_CIRCLE,
+          borderRadius: LANGUAGE_CIRCLE / 2,
           alignItems: 'center',
           justifyContent: 'center',
-          gap: spacing.xs + 2,
-          height: controlHeight.pill,
-          paddingHorizontal: spacing.lg,
-          borderRadius: radius.pill,
-          backgroundColor: selected ? colors.accent : colors.surface,
+          backgroundColor: selected ? colors.accent : muted ? colors.mint : colors.surface,
           borderWidth: 1.5,
           borderColor: selected ? colors.accent : colors.border,
           opacity: pressed ? 0.85 : 1,
+          transform: [{ scale: pressed ? 0.94 : 1 }],
         },
         selected ? shadow(1) : null,
       ]}
     >
-      {selected && <Ionicons name="checkmark" size={15} color={colors.surface} />}
-      <Text
-        style={{
-          fontSize: 15,
-          fontWeight: '700',
-          color: selected ? colors.surface : colors.ink,
-        }}
-      >
-        {label}
-      </Text>
+      {icon ? (
+        <Ionicons name={icon} size={20} color={selected ? colors.surface : colors.accentDeep} />
+      ) : (
+        <Text
+          style={{
+            fontSize: 14,
+            fontWeight: '700',
+            letterSpacing: 0.3,
+            color: selected ? colors.surface : muted ? colors.accentDeep : colors.ink,
+          }}
+        >
+          {label}
+        </Text>
+      )}
     </Pressable>
+  );
+}
+
+/**
+ * Collapsed, two circles: the language in use and a `+N` opening the rest. Expanded, a close
+ * button and a horizontally scrollable strip of every language. Picking one switches the app
+ * immediately and collapses back.
+ *
+ * The strip itself always reads left-to-right, even in Urdu — the codes are Latin (`EN`, `UR`,
+ * `AR`), so mirroring the order would make a long list harder to scan, not easier. The row
+ * around it still mirrors, which is why the close button sits on the trailing edge in Urdu.
+ */
+export function LanguageSwitcher() {
+  const { languages, languageKey, setLanguage, rowDirection, t } = useLanguage();
+  const [expanded, setExpanded] = useState(false);
+  const scrollRef = useRef(null);
+  const fade = useRef(new Animated.Value(1)).current;
+
+  // Cross-fades the two states. Height is identical either way, so only opacity moves.
+  useEffect(() => {
+    fade.setValue(0);
+    Animated.timing(fade, { toValue: 1, duration: 180, useNativeDriver: true }).start();
+  }, [expanded, fade]);
+
+  // Open the strip on the language in use rather than at its start — once there are twenty-odd
+  // languages the selected one would otherwise be somewhere off-screen.
+  useEffect(() => {
+    if (!expanded) return undefined;
+
+    const index = languages.findIndex((language) => language.key === languageKey);
+    if (index < 1) return undefined;
+
+    const offset = index * (LANGUAGE_CIRCLE + LANGUAGE_GAP) - LANGUAGE_CIRCLE;
+    const frame = requestAnimationFrame(() =>
+      scrollRef.current?.scrollTo({ x: Math.max(0, offset), animated: false })
+    );
+    return () => cancelAnimationFrame(frame);
+  }, [expanded, languageKey, languages]);
+
+  const current = languages.find((language) => language.key === languageKey) ?? languages[0];
+  const otherCount = languages.length - 1;
+
+  return (
+    <Animated.View
+      style={{
+        flexDirection: rowDirection,
+        alignItems: 'center',
+        gap: LANGUAGE_GAP,
+        height: LANGUAGE_CIRCLE,
+        opacity: fade,
+      }}
+    >
+      {expanded ? (
+        <>
+          <LanguageCircle
+            icon="close"
+            muted
+            onPress={() => setExpanded(false)}
+            accessibilityLabel={t('language.close')}
+          />
+          <ScrollView
+            ref={scrollRef}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{ flex: 1 }}
+            contentContainerStyle={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: LANGUAGE_GAP,
+              paddingRight: spacing.lg,
+            }}
+          >
+            {languages.map((language) => (
+              <LanguageCircle
+                key={language.key}
+                label={language.code}
+                selected={language.key === languageKey}
+                accessibilityLabel={language.label}
+                onPress={() => {
+                  setLanguage(language.key);
+                  setExpanded(false);
+                }}
+              />
+            ))}
+          </ScrollView>
+        </>
+      ) : (
+        <>
+          <LanguageCircle
+            label={current.code}
+            selected
+            accessibilityLabel={current.label}
+            onPress={() => setExpanded(true)}
+          />
+          {otherCount > 0 && (
+            <LanguageCircle
+              label={`+${otherCount}`}
+              muted
+              onPress={() => setExpanded(true)}
+              accessibilityLabel={t('language.more', { count: otherCount })}
+            />
+          )}
+        </>
+      )}
+    </Animated.View>
   );
 }
 

@@ -14,6 +14,7 @@
  */
 const fs = require('fs');
 const path = require('path');
+const { execFileSync } = require('child_process');
 
 const root = path.join(__dirname, '..');
 const content = JSON.parse(fs.readFileSync(path.join(root, 'app/data/content.json'), 'utf8'));
@@ -30,24 +31,50 @@ const declaredPacks = new Set(
     .flatMap((p) => (p[1].packs ?? []).map((pack) => pack.name))
 );
 
+const seenCodes = new Map();
+
+/**
+ * Languages with at least one recording. A language without any is text-only: it is translated
+ * and selectable, and its procedures play the fallback language's narration until its own audio
+ * is produced. Those languages need no asset pack, so the delivery fields are not required.
+ */
+const languagesWithVideos = new Set(
+  content.procedures.flatMap((procedure) => procedure.audio ?? [])
+);
+
 for (const language of content.languages) {
-  for (const field of ['key', 'label', 'direction', 'videoDir', 'assetPack']) {
+  const hasVideos = languagesWithVideos.has(language.key);
+
+  for (const field of ['key', 'code', 'label', 'direction', 'audioTag']) {
     if (!language[field]) errors.push(`Language "${language.key}" is missing "${field}".`);
+  }
+
+  // The switcher renders `code` inside a fixed 48pt circle, so anything longer than two
+  // characters overflows it, and a duplicate makes two languages indistinguishable.
+  if (language.code && !/^[A-Z]{2}$/.test(language.code)) {
+    errors.push(
+      `Language "${language.key}" has code "${language.code}" (expected two uppercase letters).`
+    );
+  }
+  if (language.code && seenCodes.has(language.code)) {
+    errors.push(
+      `Language "${language.key}" reuses code "${language.code}" (already used by "${seenCodes.get(language.code)}").`
+    );
+  }
+  seenCodes.set(language.code, language.key);
+
+  // Used to match the device locale at startup; without it the language can only be reached
+  // by tapping, never auto-selected.
+  if (!Array.isArray(language.locales) || language.locales.length === 0) {
+    warnings.push(
+      `Language "${language.key}" has no "locales", so it is never auto-selected from the device language.`
+    );
   }
   if (!['ltr', 'rtl'].includes(language.direction)) {
     errors.push(`Language "${language.key}" has direction "${language.direction}" (expected ltr or rtl).`);
   }
 
-  const dir = path.join(root, 'asset-packs', language.assetPack, language.videoDir);
-  if (!fs.existsSync(dir)) {
-    errors.push(`Language "${language.key}": missing directory asset-packs/${language.assetPack}/${language.videoDir}/`);
-  }
-  if (!declaredPacks.has(language.assetPack)) {
-    errors.push(
-      `Language "${language.key}": asset pack "${language.assetPack}" is not listed in app.json ` +
-        `under ./plugins/withAndroidAssetPacks.`
-    );
-  }
+
   if (!content.ui[language.key]) {
     errors.push(`Language "${language.key}" has no "ui" block in content.json.`);
   }
@@ -60,9 +87,33 @@ if (!content.languages.some((l) => l.key === content.fallbackLanguage)) {
   errors.push(`fallbackLanguage "${content.fallbackLanguage}" is not in the languages list.`);
 }
 
-/* ------------------------------------ videos ------------------------------------ */
+/* -------------------------------- video + audio --------------------------------- */
 
-const referenced = new Set();
+const videoDir = path.join(root, 'asset-packs', content.video?.assetPack ?? '', content.video?.dir ?? '');
+const audioDir = path.join(root, 'asset-packs', content.audio?.assetPack ?? '', content.audio?.dir ?? '');
+
+for (const [label, config, dir] of [
+  ['video', content.video, videoDir],
+  ['audio', content.audio, audioDir],
+]) {
+  if (!config?.assetPack || !config?.dir) {
+    errors.push(`content.json needs a top-level "${label}": { "assetPack", "dir" }.`);
+    continue;
+  }
+  if (!fs.existsSync(dir)) {
+    errors.push(`Missing directory asset-packs/${config.assetPack}/${config.dir}/`);
+  }
+  if (!declaredPacks.has(config.assetPack)) {
+    errors.push(
+      `Asset pack "${config.assetPack}" is not listed in app.json under ` +
+        './plugins/withAndroidAssetPacks.'
+    );
+  }
+}
+
+const languageKeys = new Set(content.languages.map((l) => l.key));
+const referencedVideos = new Set();
+const referencedAudio = new Set();
 
 for (const procedure of content.procedures) {
   if (!procedure.id) errors.push('A procedure is missing an "id".');
@@ -72,41 +123,82 @@ for (const procedure of content.procedures) {
     errors.push(`Procedure "${procedure.id}": missing image assets/${procedure.image}`);
   }
 
-  const videoLanguages = Object.keys(procedure.videos ?? {});
-  if (videoLanguages.length === 0) {
-    warnings.push(`Procedure "${procedure.id}" has no videos, so it never appears in the app.`);
+  if (!procedure.video) {
+    warnings.push(`Procedure "${procedure.id}" has no video, so it never appears in the app.`);
+    continue;
   }
 
-  for (const languageKey of videoLanguages) {
-    const language = content.languages.find((l) => l.key === languageKey);
-    if (!language) {
-      errors.push(`Procedure "${procedure.id}" references unknown language "${languageKey}".`);
+  const videoFile = path.join(videoDir, procedure.video);
+  if (!fs.existsSync(videoFile)) {
+    errors.push(`Procedure "${procedure.id}": missing ${path.relative(root, videoFile)}`);
+  }
+  referencedVideos.add(procedure.video);
+
+  // The picture ships once for every language, so an audio track left inside it is dead weight
+  // shipped 26 times over — and it would play underneath the narration.
+  if (fs.existsSync(videoFile)) {
+    try {
+      const probe = JSON.parse(
+        execFileSync('ffprobe', ['-v', 'error', '-of', 'json', '-show_streams', videoFile]).toString()
+      );
+      const stray = probe.streams.filter((s) => s.codec_type === 'audio');
+      if (stray.length) {
+        errors.push(
+          `Procedure "${procedure.id}": ${procedure.video} still has ${stray.length} audio ` +
+            'track(s). Videos must be picture only — re-run scripts/audio/4-package.js.'
+        );
+      }
+    } catch {
+      warnings.push(`Procedure "${procedure.id}": could not probe ${procedure.video} (is ffprobe installed?).`);
+    }
+  }
+
+  const languages = procedure.audio ?? [];
+  if (languages.length === 0) {
+    errors.push(`Procedure "${procedure.id}" lists no audio languages.`);
+  }
+  if (!languages.includes(content.fallbackLanguage)) {
+    errors.push(
+      `Procedure "${procedure.id}" has no "${content.fallbackLanguage}" narration, so languages ` +
+        'without their own have nothing to fall back to.'
+    );
+  }
+  for (const key of languages) {
+    if (!languageKeys.has(key)) {
+      errors.push(`Procedure "${procedure.id}" lists narration for unknown language "${key}".`);
       continue;
     }
-
-    const relative = path.join('asset-packs', language.assetPack, language.videoDir, procedure.videos[languageKey]);
-    if (!fs.existsSync(path.join(root, relative))) {
-      errors.push(`Procedure "${procedure.id}" (${languageKey}): missing ${relative}`);
+    const rel = path.join(key, `${procedure.id}.m4a`);
+    if (!fs.existsSync(path.join(audioDir, rel))) {
+      errors.push(`Procedure "${procedure.id}": missing audio ${path.relative(root, path.join(audioDir, rel))}`);
     }
-    referenced.add(relative);
-
-    if (!procedure.title?.[languageKey]) {
-      warnings.push(`Procedure "${procedure.id}" has a ${languageKey} video but no ${languageKey} title.`);
+    referencedAudio.add(rel);
+    if (!procedure.title?.[key]) {
+      warnings.push(`Procedure "${procedure.id}" has ${key} narration but no ${key} title.`);
     }
   }
 }
 
 /* --------------------------------- orphan files --------------------------------- */
 
-for (const language of content.languages) {
-  const dir = path.join(root, 'asset-packs', language.assetPack, language.videoDir);
-  if (!fs.existsSync(dir)) continue;
-
-  for (const file of fs.readdirSync(dir)) {
+if (fs.existsSync(videoDir)) {
+  for (const file of fs.readdirSync(videoDir)) {
     if (file.startsWith('.') || !file.endsWith('.mp4')) continue;
-    const relative = path.join('asset-packs', language.assetPack, language.videoDir, file);
-    if (!referenced.has(relative)) {
-      warnings.push(`${relative} is not referenced in content.json — it ships but is unreachable.`);
+    if (!referencedVideos.has(file)) {
+      warnings.push(`asset-packs/${content.video.assetPack}/${content.video.dir}/${file} is not referenced in content.json.`);
+    }
+  }
+}
+
+if (fs.existsSync(audioDir)) {
+  for (const languageKey of fs.readdirSync(audioDir)) {
+    const dir = path.join(audioDir, languageKey);
+    if (languageKey.startsWith('.') || !fs.statSync(dir).isDirectory()) continue;
+    for (const file of fs.readdirSync(dir)) {
+      if (file.startsWith('.') || !file.endsWith('.m4a')) continue;
+      if (!referencedAudio.has(path.join(languageKey, file))) {
+        warnings.push(`asset-packs/${content.audio.assetPack}/${content.audio.dir}/${languageKey}/${file} is not referenced in content.json.`);
+      }
     }
   }
 }
@@ -127,13 +219,20 @@ for (const language of content.languages) {
 for (const warning of warnings) console.log(`  warning  ${warning}`);
 for (const error of errors) console.log(`  error    ${error}`);
 
-const counts = content.languages
-  .map((l) => `${l.key}: ${content.procedures.filter((p) => p.videos?.[l.key]).length}`)
-  .join(', ');
+const dubbed = content.languages.filter((l) => languagesWithVideos.has(l.key));
+const textOnly = content.languages.filter((l) => !languagesWithVideos.has(l.key));
 
 console.log(
-  `\n${content.procedures.length} procedures, ${content.languages.length} languages (${counts})`
+  `\n${content.procedures.length} procedures, ${content.languages.length} languages ` +
+    `(${dubbed.length} narrated, ${textOnly.length} text-only)`
 );
+console.log(`  narrated   ${dubbed.map((l) => l.code).join(' ')}`);
+if (textOnly.length) {
+  console.log(
+    `  text-only  ${textOnly.map((l) => l.code).join(' ')}` +
+      `\n             narration falls back to ${content.fallbackLanguage}`
+  );
+}
 
 if (errors.length) {
   console.log(`\n${errors.length} error(s). Fix these before building.`);

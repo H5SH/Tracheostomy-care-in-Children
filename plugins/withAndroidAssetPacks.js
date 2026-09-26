@@ -22,7 +22,7 @@
  * Usage (app.json):
  *   ["./plugins/withAndroidAssetPacks", {
  *     "packs": [
- *       { "name": "urdu_videos", "sourceDir": "./asset-packs/urdu_videos", "deliveryType": "install-time" }
+ *       { "name": "videos", "sourceDir": "./asset-packs/videos", "deliveryType": "install-time" }
  *     ]
  *   }]
  */

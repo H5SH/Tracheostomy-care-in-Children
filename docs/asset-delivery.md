@@ -1,7 +1,7 @@
 # Offline videos via Google Play Asset Delivery
 
 The Urdu training videos (139 MB) ship inside a **Play Asset Delivery (PAD) install-time asset
-pack** called `urdu_videos`. Play installs the pack together with the app, so every video is on
+pack** called `videos`. Play installs the pack together with the app, so every video is on
 the device the first time the app opens — there is no download screen, no post-install fetch and
 no network dependency at playback time.
 
@@ -13,8 +13,8 @@ pushed them into the base APK and past Play's 200 MB base-module limit.
 ```
 app/
 ├── asset-packs/
-│   └── urdu_videos/            # source of truth, version-controlled
-│       └── videos/urdu/*.mp4   # becomes "videos/urdu/…" at runtime
+│   └── videos/                 # source of truth, version-controlled
+│       └── videos/*.mp4        # becomes "videos/…" at runtime
 ├── plugins/
 │   └── withAndroidAssetPacks.js  # generates the Gradle asset pack module
 ├── modules/
@@ -25,20 +25,20 @@ app/
 ```
 
 The directory tree under `asset-packs/<packName>/` **is** the pack's asset namespace: a file at
-`asset-packs/urdu_videos/videos/urdu/HandHygieneUrdu.mp4` is addressed at runtime as
-`videos/urdu/HandHygieneUrdu.mp4`.
+`asset-packs/videos/videos/hand-hygiene.mp4` is addressed at runtime as
+`videos/hand-hygiene.mp4`.
 
 ## Build wiring
 
 `android/` stays generated (CNG) — nothing about this is committed. On every `expo prebuild`, the
 `withAndroidAssetPacks` config plugin, configured in `app.json`:
 
-1. writes `android/urdu_videos/build.gradle` applying `com.android.asset-pack` with
+1. writes `android/videos/build.gradle` applying `com.android.asset-pack` with
    `deliveryType = "install-time"`;
-2. mirrors `asset-packs/urdu_videos/**` into `android/urdu_videos/src/main/assets/**` using
+2. mirrors `asset-packs/videos/**` into `android/videos/src/main/assets/**` using
    **hard links**, so the 139 MB costs no extra disk and no copy time, and stale files are pruned;
-3. appends `include ':urdu_videos'` to `android/settings.gradle`;
-4. injects `assetPacks = [":urdu_videos"]` into the `android {}` block of `android/app/build.gradle`.
+3. appends `include ':videos'` to `android/settings.gradle`;
+4. injects `assetPacks = [":videos"]` into the `android {}` block of `android/app/build.gradle`.
 
 Both Gradle edits are fenced with `@generated` markers, so re-running the plugin replaces them
 rather than duplicating them.
@@ -82,7 +82,7 @@ seek within them efficiently.
 ```js
 import { getAssetUri } from '../../modules/asset-packs';
 
-const uri = getAssetUri('videos/urdu/HandHygieneUrdu.mp4');
+const uri = getAssetUri('videos/hand-hygiene.mp4');
 const player = useVideoPlayer(uri ? { uri } : null);
 ```
 
@@ -138,7 +138,7 @@ same `file:///android_asset/…` paths work without going through Play.
 ### Verifying an AAB
 
 ```bash
-unzip -l <app>.aab | grep urdu_videos        # pack present, 8 entries
+unzip -l <app>.aab | grep "assetpack|videos/"      # pack present, 9 entries
 bundletool build-apks --bundle=<app>.aab --output=out.apks --local-testing
 bundletool install-apks --apks=out.apks      # installs base + asset pack splits
 ```
@@ -163,7 +163,7 @@ file matching the build target and never walks the other one:
 | `app/media/assetPackVideos.android.js` | Android | Play Asset Delivery install-time pack |
 | `app/media/assetPackVideos.js` | iOS, web, Expo Go | bundled as ordinary React Native assets |
 
-Both read from the same files in `asset-packs/urdu_videos/` — there is one copy on disk, only the
+Both read from the same files in `asset-packs/videos/` — there is one copy on disk, only the
 delivery mechanism differs, and `app/data/deases.js` stays the single source of truth for which
 video belongs to which procedure.
 

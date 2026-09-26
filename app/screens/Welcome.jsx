@@ -10,8 +10,8 @@ import {
   Eyebrow,
   FadeInView,
   FeatureRow,
+  LanguageSwitcher,
   Screen,
-  TogglePill,
 } from '../ui/components';
 import { colors, leading, radius, shadow, spacing, type } from '../ui/theme';
 
@@ -26,7 +26,7 @@ const SUBTITLE_MIN_HEIGHT = leading(SUBTITLE_FONT_SIZE) * 3;
 
 function Welcome({ navigation }) {
   const insets = useSafeAreaInsets();
-  const { t, languageKey, languages, setLanguage, textStyle, rowDirection } = useLanguage();
+  const { t, languageKey, textStyle } = useLanguage();
 
   const procedureCount = proceduresFor(languageKey).length;
 
@@ -113,22 +113,8 @@ function Welcome({ navigation }) {
         {/* Anchored to the bottom of the screen in every language. */}
         <FadeInView delay={220}>
           <Eyebrow style={{ marginBottom: spacing.md }}>{t('welcome.language')}</Eyebrow>
-          <View
-            style={{
-              flexDirection: rowDirection,
-              flexWrap: 'wrap',
-              gap: spacing.sm,
-              marginBottom: spacing.lg,
-            }}
-          >
-            {languages.map((item) => (
-              <TogglePill
-                key={item.key}
-                label={item.label}
-                selected={item.key === languageKey}
-                onPress={() => setLanguage(item.key)}
-              />
-            ))}
+          <View style={{ marginBottom: spacing.lg }}>
+            <LanguageSwitcher />
           </View>
 
           <AppButton
